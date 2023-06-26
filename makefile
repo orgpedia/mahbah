@@ -9,7 +9,8 @@ sub_tasks := translate_
 sub_tasks := $(foreach s, $(foreach t,$(sub_tasks),subFlows/$t), flow/$s)
 
 
-.PHONY: help install import flow export check readme lint format pre-commit $(tasks) check_env $(sub_tasks)
+.PHONY: help install import flow export check readme lint format pre-commit $(tasks) check_env
+.PHONY: trans-install translate trans-export $(sub_tasks)
 
 help:
 	$(info Please use 'make <target>', where <target> is one of)
@@ -52,9 +53,10 @@ import/websites/gr.maharashtra.gov.in/Bahujan:
 	cd .secrets && ln -s $(SECRETS_DIR)/google.token .
 
 import/models/ai4bharat/IndicTrans2-en/ct2_int8_model:
+	mkdir -p import/models/ai4bharat/IndicTrans2-en
 	cd import/models/ai4bharat/IndicTrans2-en/ && ln -s $(MODELS_DIR)/ct2_int8_model .
 
-import: check_env import/websites/gr.maharashtra.gov.in/Bahujan .secrets/google.token import/models/ai4bharat/IndicTrans2-en/ct2_int8_model
+import: check_env import/websites/gr.maharashtra.gov.in/Bahujan .secrets/google.token 
 	poetry run python import/src/build_documents.py import/websites/gr.maharashtra.gov.in/Bahujan import/documents
 	poetry run python flow/src/link_new.py import/documents flow/writeTxt_/input
 
@@ -62,9 +64,19 @@ flow: $(tasks)
 $(tasks):
 	poetry run make -C $@
 
+trans-install: import/models/ai4bharat/IndicTrans2-en/ct2_int8_model
+	poetry lock
+	poetry install --only=translate
+
+
+
 translate: $(sub_tasks)
 $(sub_tasks):
 	poetry run make -C $@
+
+trans-export: 
+	poetry run make -C flow/subFlows/translate_ compress
+
 
 check:
 	poetry run op check
