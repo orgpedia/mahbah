@@ -1,0 +1,10 @@
+{
+  "name": "202510131916240534.pdf",
+  "file_id": null,
+  "source": {
+    "path": "input/pdfs/2025-10/202510131916240534.pdf",
+    "sha256": "f0d4ec3ece355b9fd0e935e0ddbf6b43329d605d1cb6414fb187c880680ceffd"
+  },
+  "status": "skipped",
+  "reason": "34 pages, over max_pages 20"
+}
